@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report>
+  <Title>Credit Balance Report</Title>
+  <Path>C:\AS400Report\Print Queue\prtq</Path>
+  <SearchPattern>CREB*.*</SearchPattern>
+  <FormName>CREDITBAL</FormName>
+  <Printer>
+    <HardCopy>false</HardCopy>
+    <PrinterName>HP OfficeJet Pro 8630 (Network)</PrinterName>
+  </Printer>
+  <Pdf>
+    <CreatePdf>true</CreatePdf>
+    <PdfName>credit_balance_08_%scid%_%cons%_%date%.pdf</PdfName>
+    <PdfPath>C:\AS400Report\Reports\%scid%\</PdfPath>
+    <PdfMargins>
+      <Top>10</Top>
+      <Bottom>10</Bottom>
+      <Left>10</Left>
+      <Right>10</Right>
+    </PdfMargins>
+  </Pdf>
+  <Layout>
+    <Font>
+      <FontName>Consolas</FontName>
+      <FontSize>8</FontSize>
+    </Font>
+    <Margins>
+      <Top>75</Top>
+      <Bottom>75</Bottom>
+      <Left>40</Left>
+      <Right>40</Right>
+    </Margins>
+    <Orientation>Landscape</Orientation>
+  </Layout>
+</Report>
