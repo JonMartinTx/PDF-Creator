@@ -319,7 +319,7 @@ namespace AS400Report
 
         #endregion
 
-        #region Zip Old Files
+        #region Zip Old Files  :  Unused
 
         public static void ArchiveFiles()
         {
@@ -725,8 +725,6 @@ namespace AS400Report
                     //.Where(p => p.CreationTime <= yesterday)
                     .OrderBy(p => p.CreationTime);
 
-                int number;
-
                 using (var zip = new Ionic.Zip.ZipFile())
                 {
                     foreach (var file in zipfiles)
@@ -928,7 +926,7 @@ namespace AS400Report
 
             // Load configuration file for report
             var fileOnly = Path.GetFileName(filePath);
-            var configFile = fileOnly.Substring(0, 4) + "_config.xml";
+            var configFile = (fileOnly.Substring(0, 3) == "SLP") ? "WACH_config.xml" : fileOnly.Substring(0, 4) + "_config.xml";
             DirectoryInstance.ConfigPath = @"C:\AS400Report\PrintSetUp\";
             var configPath = DirectoryInstance.ConfigPath/* + ConfigurationSettings.AppSettings["ConfigPath"]*/ + configFile;
             if (File.Exists(configPath))

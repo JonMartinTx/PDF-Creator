@@ -8,7 +8,6 @@ using Report;
 using System.Linq;
 using System.Collections.Generic;
 using TemplatePrinting;
-using System.Threading.Tasks;
 using System.Threading;
 using AS400Report;
 using static System.IO.File;
@@ -440,105 +439,107 @@ namespace TemplatePrinting
                                 // replace this with your PDF form template
                                 FileReader = new PdfReader(DirectoryInstance.ToUserDirectory + @"\Google Drive\PrintingProgram\CompletedTemplates\PDFStatement.pdf");
                                 using (var ms = new MemoryStream())
-                                {
                                     //The stamper copies the contents of the old file onto a memory stream. I can then add text and proceed to print the stream to the Doc.
-                                    using (var stamper = new PdfStamper(FileReader, ms))
+                                using (var stamper = new PdfStamper(FileReader, ms))
+                                {
+                                    //generate one page per statement
+                                    foreach (var field in fields.Skip(1))
                                     {
-                                        //generate one page per statement
-                                        foreach (var field in fields.Skip(1))
-                                        {
-                                            ++counter;
+                                        ++counter;
 
-                                            //Each field in my pdf is called "form" [they're called form fields]
-                                            var form = stamper.AcroFields;
+                                        //Each field in my pdf is called "form" [they're called form fields]
+                                        var form = stamper.AcroFields;
 
-                                            //TopRight Block
-                                            form.SetField("Payoff-Thru#0", field[22]);
-                                            form.SetField("Total-Due#0", field[14]);
-                                            form.SetField("Account#0", field[0]);
-                                            AccountNumber = field[0];
-                                            //End TopRight Block
+                                        //TopRight Block
+                                        form.SetField("Payoff-Thru#0", field[22]);
+                                        form.SetField("Total-Due#0", field[14]);
+                                        form.SetField("Account#0", field[0]);
+                                        AccountNumber = field[0];
+                                        //End TopRight Block
 
-                                            //Address Block
-                                            var addressBlock = GetAddress(fields[counter]);
-                                            form.SetField("School, Name1, Name2, Name3, Address1, Address2, Address3, City, State, Zip, Country", addressBlock);
-                                            //End Address Block
+                                        //Address Block
+                                        var addressBlock = GetAddress(fields[counter]);
+                                        form.SetField(
+                                            "School, Name1, Name2, Name3, Address1, Address2, Address3, City, State, Zip, Country",
+                                            addressBlock);
+                                        //End Address Block
 
-                                            //Comments Block
-                                            form.SetField("Msg1", field[31]);
-                                            form.SetField("Msg2", field[32]);
-                                            form.SetField("Msg3", field[33]);
-                                            form.SetField("Msg4", field[34]);
-                                            form.SetField("Msg5", field[35]);
-                                            form.SetField("Msg6", field[36]);
-                                            form.SetField("Msg7", field[37]);
-                                            //End Comments Block
+                                        //Comments Block
+                                        form.SetField("Msg1", field[31]);
+                                        form.SetField("Msg2", field[32]);
+                                        form.SetField("Msg3", field[33]);
+                                        form.SetField("Msg4", field[34]);
+                                        form.SetField("Msg5", field[35]);
+                                        form.SetField("Msg6", field[36]);
+                                        form.SetField("Msg7", field[37]);
+                                        //End Comments Block
 
-                                            /*Remove this before deploying the code to make statements
-                                             * This is only here to test the comment box
-                                             * with an example announcement of going paperless.*/
-                                            field[39] = /*"We are now offering the opportunity to go paperless! \nIf you'd like to receive E-Statements, \nplease include your e-mail address on the return stub."*/ "";
-                                            form.SetField("Msg9", field[39]);
-                                            //End E-Statement Block
+                                        /*Remove this before deploying the code to make statements
+                                         * This is only here to test the comment box
+                                         * with an example announcement of going paperless.*/
+                                        field[39] =
+                                            /*"We are now offering the opportunity to go paperless! \nIf you'd like to receive E-Statements, \nplease include your e-mail address on the return stub."*/
+                                            "";
+                                        form.SetField("Msg9", field[39]);
+                                        //End E-Statement Block
 
-                                            //EDSI Phone Number Block
-                                            form.SetField("Tel-1, Tel-2", field[41] + " / " + field[42]);
-                                            //End EDSI Phone Number Block
+                                        //EDSI Phone Number Block
+                                        form.SetField("Tel-1, Tel-2", field[41] + " / " + field[42]);
+                                        //End EDSI Phone Number Block
 
-                                            //Left "Loan Amount" Block
-                                            form.SetField("Orig-Amt#1", field[15]);
-                                            form.SetField("Prin-Ltd", field[17]);
-                                            form.SetField("Prin-Can", field[18]);
-                                            form.SetField("Prin-Bal", field[16]);
-                                            form.SetField("Int-Ltd", field[19]);
-                                            form.SetField("Int-Can", field[20]);
-                                            form.SetField("Payoff", field[21]);
-                                            form.SetField("Payoff-Thru#1", field[22]);
-                                            form.SetField("Date-Last-Pay", field[23]);
-                                            form.SetField("Amt-Last-Pay", field[24]);
-                                            //End Left "Loan Amount" Block
+                                        //Left "Loan Amount" Block
+                                        form.SetField("Orig-Amt#1", field[15]);
+                                        form.SetField("Prin-Ltd", field[17]);
+                                        form.SetField("Prin-Can", field[18]);
+                                        form.SetField("Prin-Bal", field[16]);
+                                        form.SetField("Int-Ltd", field[19]);
+                                        form.SetField("Int-Can", field[20]);
+                                        form.SetField("Payoff", field[21]);
+                                        form.SetField("Payoff-Thru#1", field[22]);
+                                        form.SetField("Date-Last-Pay", field[23]);
+                                        form.SetField("Amt-Last-Pay", field[24]);
+                                        //End Left "Loan Amount" Block
 
-                                            //Right "Loan Balance" Block
-                                            form.SetField("Orig-Amt#0", field[16]);
-                                            form.SetField("Total-Due#1", field[14]);
-                                            form.SetField("Pay-Past", field[26]);
-                                            form.SetField("LC-Due", field[27]);
-                                            form.SetField("Fee-Due", field[28]);
-                                            form.SetField("Total-Due#2", field[14]);
-                                            //End Right "Loan Balance" Block
+                                        //Right "Loan Balance" Block
+                                        form.SetField("Orig-Amt#0", field[16]);
+                                        form.SetField("Total-Due#1", field[14]);
+                                        form.SetField("Pay-Past", field[26]);
+                                        form.SetField("LC-Due", field[27]);
+                                        form.SetField("Fee-Due", field[28]);
+                                        form.SetField("Total-Due#2", field[14]);
+                                        //End Right "Loan Balance" Block
 
-                                            //Stub Right Block
-                                            form.SetField("Account#1", field[0]);
-                                            //Name Sub-Block
-                                            form.SetField("Name#1", field[4] + " " + field[5] + " " + field[6] + "\n");                        //Name
-                                                                                                                                               //End Name Sub-Block
-                                            form.SetField("Payoff-Thru#2", field[22]);
-                                            //End Stub Right Block
+                                        //Stub Right Block
+                                        form.SetField("Account#1", field[0]);
+                                        //Name Sub-Block
+                                        form.SetField("Name#1", field[4] + " " + field[5] + " " + field[6] + "\n");
+                                            //Name
+                                        //End Name Sub-Block
+                                        form.SetField("Payoff-Thru#2", field[22]);
+                                        //End Stub Right Block
 
-                                            //Begin Extra Stub Block
-                                            /***********************************************************************************************************************************************************************************
-                                            *form.SetField("Name#2", Field[4] + " " + Field[5] + " " + Field[6] + "\n");                                      //Name                                                              *
-                                            *form.SetField("Address1, Address2, Address3", Field[7] + "\n" +                                                //Address 1                                                         *
-                                            *    Field[8] + "\n" +                                                                                          //Address 2                                                         *
-                                            *    Field[9] + "\n");                                                                                          //Address 3                                                         *
-                                            *form.SetField("City, State, Zip", Field[10] + ", " + Field[11] + " " + Field[12] + "\n" + Field[13]);             //City, State Zip                                                   *
-                                            *if (Field[41] != "" && Field[42] != "") { form.SetField("Phone", Field[41] + " / " + Field[42]); }                //If student has both phone numbers                                 *
-                                            *else if (Field[41] != "") form.SetField("Phone", Field[41]);                                                    //If student has Telephone 1 ONLY                                   *
-                                            *else if (Field[42] != "") form.SetField("Phone", Field[42]);                                                    //If student has Telephone 2 ONLY                                   *
-                                            *else if (Field[41] == "" && Field[42] == "") { form.SetField("Phone", "No Contact info on file."); }            //Small phrase that prompts students to provide phone number.       *
-                                            ************************************************************************************************************************************************************************************/
-                                            //End Extra Stub Block
+                                        //Begin Extra Stub Block
+                                        /***********************************************************************************************************************************************************************************
+                                        *form.SetField("Name#2", Field[4] + " " + Field[5] + " " + Field[6] + "\n");                                      //Name                                                              *
+                                        *form.SetField("Address1, Address2, Address3", Field[7] + "\n" +                                                //Address 1                                                         *
+                                        *    Field[8] + "\n" +                                                                                          //Address 2                                                         *
+                                        *    Field[9] + "\n");                                                                                          //Address 3                                                         *
+                                        *form.SetField("City, State, Zip", Field[10] + ", " + Field[11] + " " + Field[12] + "\n" + Field[13]);             //City, State Zip                                                   *
+                                        *if (Field[41] != "" && Field[42] != "") { form.SetField("Phone", Field[41] + " / " + Field[42]); }                //If student has both phone numbers                                 *
+                                        *else if (Field[41] != "") form.SetField("Phone", Field[41]);                                                    //If student has Telephone 1 ONLY                                   *
+                                        *else if (Field[42] != "") form.SetField("Phone", Field[42]);                                                    //If student has Telephone 2 ONLY                                   *
+                                        *else if (Field[41] == "" && Field[42] == "") { form.SetField("Phone", "No Contact info on file."); }            //Small phrase that prompts students to provide phone number.       *
+                                        ************************************************************************************************************************************************************************************/
+                                        //End Extra Stub Block
 
-                                            //"Flatten" the form so it wont be editable/usable anymore
-                                            stamper.FormFlattening = true;
-                                        }
-                                        //Add this page to my memory stream array.
-                                        FileReader = new PdfReader(ms.ToArray());
-
-                                        //Copy 1 page of the template to the output
-                                        Copy.AddPage(Copy.GetImportedPage(FileReader, 1));
-
+                                        //"Flatten" the form so it wont be editable/usable anymore
+                                        stamper.FormFlattening = true;
                                     }
+                                    //Add this page to my memory stream array.
+                                    FileReader = new PdfReader(ms.ToArray());
+
+                                    //Copy 1 page of the template to the output
+                                    Copy.AddPage(Copy.GetImportedPage(FileReader, 1));
                                 }
                             }
                             //Add meta data
@@ -2142,6 +2143,7 @@ namespace TemplatePrinting
         #region PrintInterestPaid
 
         //Using a CSV File
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public void PrintPerkinsAssignment()
         {
             //Currently unused

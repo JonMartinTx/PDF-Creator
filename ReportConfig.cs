@@ -181,13 +181,13 @@ namespace Report
                 prefix == "LOWB" || prefix == "PAST" || prefix == "PAID" || prefix == "COHO" || prefix == "SEPA" ||
                 prefix == "BADA" || prefix == "FISC" || prefix == "NEWL" || prefix == "ENRO" || prefix == "BATC" ||
                 prefix == "DELE" || prefix == "INVO" || prefix == "EPSR" || prefix == "COLL" || prefix == "HIST" ||
-                prefix == "DISB")
+                prefix == "DISB" || prefix == "EPSR" || prefix == "SLP0")
             {
                 strScid = origFileName.Substring(4, 3);
                 strCons = origFileName.Substring(7, 3);
 
 
-                if (prefix != "EPSR" && prefix != "INVO" && prefix != "HIST")
+                if (prefix != "EPSR" && prefix != "INVO" && prefix != "HIST" && prefix != "SLP0")
                 {
                     try
                     {
