@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report>
+  <Title>Transaction Journal</Title>
+  <Path>C:\AS400Report\Print Queue\prtq</Path>
+  <SearchPattern>EPSR*.*</SearchPattern>
+  <FormName>EPSRECAP</FormName>
+  <Printer>
+    <HardCopy>false</HardCopy>
+    <PrinterName>HP OfficeJet Pro 8630 (Network)</PrinterName>
+  </Printer>
+  <Pdf>
+    <CreatePdf>true</CreatePdf>
+    <PdfName>cc_recap_%scid%_%cons%_%date%.pdf</PdfName>
+    <PdfPath>C:\AS400Report\Reports\Recaps\</PdfPath>
+    <PdfMargins>
+      <Top>10</Top>
+      <Bottom>10</Bottom>
+      <Left>20</Left>
+      <Right>20</Right>
+    </PdfMargins>
+  </Pdf>
+  <Layout>
+    <Font>
+      <FontName>Consolas</FontName>
+      <FontSize>8</FontSize>
+    </Font>
+    <Margins>
+      <Top>75</Top>
+      <Bottom>75</Bottom>
+      <Left>40</Left>
+      <Right>40</Right>
+    </Margins>
+    <Orientation>Landscape</Orientation>
+  </Layout>
+</Report>

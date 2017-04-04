@@ -1,0 +1,6 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/ContinuousTesting/PersistentDataLocation/@EntryValue">C:\Users\Owner\AppData\Local\Temp\JetBrains\ContinuousTesting\27d6631d-8bcf-41b1-8554-9f61d5935774</s:String>
+	<s:String x:Key="/Default/Environment/ContinuousTesting/ScopeCriterion/@EntryValue">9b0nIQIAAAD1vSchAgAAAIlsuiHXrZUS0Q7cXB8AAABDAG8AbgB0AGkAbgB1AG8AdQBzAFQAZQBzAHQAaQBuAGcASABvAHMAdABQAHIAbwB2AGkAZABlAHIASQBkANetlRLRDtxcHwAAAEMAbwBuAHQAaQBuAHUAbwB1AHMAVABlAHMAdABpAG4AZwBIAG8AcwB0AFAAcgBvAHYAaQBkAGUAcgBJAGQA</s:String>
+	<s:String x:Key="/Default/Environment/ContinuousTesting/SnapshotLocation/@EntryValue">C:\Users\Owner\AppData\Local\Temp\ssm.Ponyxyc.tmp</s:String>
+	<s:String x:Key="/Default/Environment/ContinuousTesting/Strategy/@EntryValue">RunTests</s:String>
+	<s:String x:Key="/Default/Environment/ContinuousTesting/TriggerMode/@EntryValue">OnSave</s:String></wpf:ResourceDictionary>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report>
+  <Title>Invoices</Title>
+  <Path>C:\AS400Report\Print Queue\prtq</Path>
+  <SearchPattern>INVO*.*</SearchPattern>
+  <FormName>Invoices</FormName>
+  <Printer>
+    <HardCopy>false</HardCopy>
+    <PrinterName>HP OfficeJet Pro 8630 (Network)</PrinterName>
+  </Printer>
+  <Pdf>
+    <CreatePdf>true</CreatePdf>
+    <PdfName>invoice_%scid%_%cons%_%date%.pdf</PdfName>
+    <PdfPath>C:\AS400Report\Reports\Invoices\</PdfPath>
+    <PdfMargins>
+      <Top>10</Top>
+      <Bottom>10</Bottom>
+      <Left>10</Left>
+      <Right>10</Right>
+    </PdfMargins>
+    <TopPrintOffset>625</TopPrintOffset>
+</Pdf>
+  <Layout>
+    <Font>
+      <FontName>Consolas</FontName>
+      <FontSize>10</FontSize>
+    </Font>
+    <Margins>
+      <Top>175</Top>
+      <Bottom>75</Bottom>
+      <Left>40</Left>
+      <Right>40</Right>
+    </Margins>
+    <Orientation>Portrait</Orientation>
+  </Layout>
+</Report>
