@@ -1,17 +1,17 @@
-﻿using System;
-using System.Text;
-using System.IO;
+﻿using AS400Report;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.Drawing;
 using Report;
-using System.Linq;
+using System;
 using System.Collections.Generic;
-using TemplatePrinting;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
-using AS400Report;
-using static System.IO.File;
+using TemplatePrinting;
 using static AS400Report.PrintQueue;
+using static System.IO.File;
 using static TemplatePrinting.PrintStatement;
 
 namespace Report
@@ -118,31 +118,37 @@ namespace Report
             if (templateName == "Remittance" || templateName == "Invoice" || templateName == "PDFStatement" || templateName == "StudentJournal" || templateName == "BlankStatement")
 
             {
-                if (templateName == "Remittance" || templateName == "Invoice")
+                switch (templateName)
                 {
-                    myTemplate = Templates.Invoice;
-                    var temp = new Remittance();
-                    temp.PrintRemittancePdf(filesToPrint);
-                    pdfContentByteText = true;
-                }
-                if (templateName == "Statement")
-                {
-                    myTemplate = Templates.Statement;
-                    var statementPrinting = new PrintStatement();
-                    statementPrinting.PrintStatementPdf(filesToPrint);
-                    pdfContentByteText = false;
-                }
-                if (templateName == "StudentJournal")
-                {
-                    myTemplate = Templates.StudentJournal;
-                    var temp = new StudentJournal();
-                    temp.PrintStudentJournalPdf(filesToPrint);
-                    pdfContentByteText = true;
-                }
-                if (templateName == "BlankStatement")
-                {
-                    myTemplate = Templates.Blank;
-                    pdfContentByteText = false;
+                    case "Remittance":
+                    case "Invoice":
+                        {
+                            myTemplate = Templates.Invoice;
+                            var temp = new Remittance();
+                            temp.PrintRemittancePdf(filesToPrint);
+                            pdfContentByteText = true;
+                            break;
+                        }
+                    case "Statement":
+                        {
+                            myTemplate = Templates.Statement;
+                            var statementPrinting = new PrintStatement();
+                            statementPrinting.PrintStatementPdf(filesToPrint);
+                            pdfContentByteText = false;
+                            break;
+                        }
+                    case "StudentJournal":
+                        {
+                            myTemplate = Templates.StudentJournal;
+                            var temp = new StudentJournal();
+                            temp.PrintStudentJournalPdf(filesToPrint);
+                            pdfContentByteText = true;
+                            break;
+                        }
+                    case "BlankStatement":
+                        myTemplate = Templates.Blank;
+                        pdfContentByteText = false;
+                        break;
                 }
 
                 //... continue to the rest of the reports
@@ -188,7 +194,7 @@ namespace Report
 
                 for (int i = 1, j = 4; i < maxElements; i++, j++)
                 {
-                    if (String.IsNullOrWhiteSpace(lines[j]))
+                    if (string.IsNullOrWhiteSpace(lines[j]))
                         continue;
 
                     temp[i] = lines[j];
@@ -199,17 +205,19 @@ namespace Report
                     }
 
 
-                    if (j == 4 || j == 5 || j == 11)
-                        temp[i] = temp[i] + " ";
-
-                    else if (j == 10)
+                    switch (j)
                     {
-                        temp[i] = temp[i] + ", ";
-                    }
-
-                    else
-                    {
-                        temp[i] = temp[i] + "\n";
+                        case 4:
+                        case 5:
+                        case 11:
+                            temp[i] = temp[i] + " ";
+                            break;
+                        case 10:
+                            temp[i] = temp[i] + ", ";
+                            break;
+                        default:
+                            temp[i] = temp[i] + "\n";
+                            break;
                     }
                 }
 
@@ -289,7 +297,7 @@ namespace Report
 
     }
 
-#endregion
+    #endregion
 }
 
 
@@ -328,7 +336,7 @@ namespace TemplatePrinting
         public string OutputFileName { get; set; }
         public string TodaysDate { get; set; }
         public string FullOutputPath { get; set; }
-        public Boolean BSuccess;
+        public bool BSuccess;
 
         #endregion
 
@@ -439,7 +447,7 @@ namespace TemplatePrinting
                                 // replace this with your PDF form template
                                 FileReader = new PdfReader(DirectoryInstance.ToUserDirectory + @"\Google Drive\PrintingProgram\CompletedTemplates\PDFStatement.pdf");
                                 using (var ms = new MemoryStream())
-                                    //The stamper copies the contents of the old file onto a memory stream. I can then add text and proceed to print the stream to the Doc.
+                                //The stamper copies the contents of the old file onto a memory stream. I can then add text and proceed to print the stream to the Doc.
                                 using (var stamper = new PdfStamper(FileReader, ms))
                                 {
                                     //generate one page per statement
@@ -513,7 +521,7 @@ namespace TemplatePrinting
                                         form.SetField("Account#1", field[0]);
                                         //Name Sub-Block
                                         form.SetField("Name#1", field[4] + " " + field[5] + " " + field[6] + "\n");
-                                            //Name
+                                        //Name
                                         //End Name Sub-Block
                                         form.SetField("Payoff-Thru#2", field[22]);
                                         //End Stub Right Block
@@ -1078,7 +1086,7 @@ namespace TemplatePrinting
                         form.SetField("Account#1", field[0]);
                         //Name Sub-Block
                         form.SetField("Name#1", field[4] + " " + field[5] + " " + field[6] + "\n");                        //Name
-                                                                                                                                      //End Name Sub-Block
+                                                                                                                           //End Name Sub-Block
                         form.SetField("Amount Due", field[14]);
                         form.SetField("Payoff-Thru#2", field[22]);
                         //End Stub Right Block
@@ -1372,15 +1380,15 @@ namespace TemplatePrinting
         public void PrintStudentJournalPdf(List<string> filesToPrint)
         {
             //Setting The Font
-            const string fontpath = @"C:\Windows\Fonts\";
-            var monoFont = BaseFont.CreateFont(fontpath + "Consola.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+            const string FONTPATH = @"C:\Windows\Fonts\";
+            var monoFont = BaseFont.CreateFont(FONTPATH + "Consola.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
             //Foundation Roman(Used in Letterhead)
-            var foundationFont = BaseFont.CreateFont(fontpath + "FoundationRoman-Italic.otf", BaseFont.CP1252, BaseFont.EMBEDDED);
+            var foundationFont = BaseFont.CreateFont(FONTPATH + "FoundationRoman-Italic.otf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
             //AG Book, used everywhere else. (Medium is used for certain bolded portions).
-            BaseFont.CreateFont(fontpath + "AGRoundedBook Book.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
-            BaseFont.CreateFont(fontpath + "AGSchoolbookMediumABook Book.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+            BaseFont.CreateFont(FONTPATH + "AGRoundedBook Book.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+            BaseFont.CreateFont(FONTPATH + "AGSchoolbookMediumABook Book.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
             //instance.CloseAndFinish();
             var letterhead = DirectoryInstance.ToUserDirectory + @"\Google Drive\PrintingProgram\TestDocs\Watermark\Letterhead.jpg";
@@ -1455,15 +1463,15 @@ namespace TemplatePrinting
                             while (ScannerText.PageLength > 0)
                             {
                                 //Making a PDF Contentbyte for coloring blue rectangles and absolute positioned text
-                                const float headerLines = 7;     // specifically student journal
-                                const float lineMultiplier = 4;  // specifically student journal
+                                const float HEADER_LINES = 7;     // specifically student journal
+                                const float LINE_MULTIPLIER = 4;  // specifically student journal
                                 var yOffset = 11.6f;
-                                const float xPosRc = 40f;         //x-Position for the Rectangle
+                                const float X_POSITION_FOR_RECTANGLE = 40f;         //x-Position for the Rectangle
                                 var heightRc = 452.8f;    //Height of Rectangle
-                                var yPosRc = (heightRc) - (yOffset * lineMultiplier);               //y-Position for the Rectangle
-                                const float widthRc = 810F;       //Width of Rectangle
-                                const float minY = 13.2f;
-                                const float yMax = 555.8f;
+                                var yPosRc = (heightRc) - (yOffset * LINE_MULTIPLIER);               //y-Position for the Rectangle
+                                const float WIDTH_OF_RECTANGLE = 810F;       //Width of Rectangle
+                                const float MIN_Y = 13.2f;
+                                const float Y_MAX = 555.8f;
                                 var cb = Writer.DirectContent;
 
                                 //Applying the EDSI Letterhead
@@ -1478,7 +1486,7 @@ namespace TemplatePrinting
                                 //Add the Letterhead
                                 cb.AddImage(letterHead);
 
-                                heightRc = (yMax - (headerLines * yOffset));
+                                heightRc = (Y_MAX - (HEADER_LINES * yOffset));
 
                                 //Colors (Alice Blue, Royal Blue)
                                 Hex = "#D1D8E5";
@@ -1498,15 +1506,15 @@ namespace TemplatePrinting
 
 
                                 //Drawing the Border
-                                cb.MoveTo(xPosRc - 1, heightRc + 1);
+                                cb.MoveTo(X_POSITION_FOR_RECTANGLE - 1, heightRc + 1);
                                 cb.SetLineWidth(1);
-                                cb.LineTo(widthRc + 1, heightRc + 1);
+                                cb.LineTo(WIDTH_OF_RECTANGLE + 1, heightRc + 1);
                                 cb.SetLineWidth(1);
-                                cb.LineTo(widthRc + 1, minY);
+                                cb.LineTo(WIDTH_OF_RECTANGLE + 1, MIN_Y);
                                 cb.SetLineWidth(1);
-                                cb.LineTo(xPosRc - 1, minY);
+                                cb.LineTo(X_POSITION_FOR_RECTANGLE - 1, MIN_Y);
                                 cb.SetLineWidth(1);
-                                cb.LineTo(xPosRc - 1, heightRc + 1.5);
+                                cb.LineTo(X_POSITION_FOR_RECTANGLE - 1, heightRc + 1.5);
                                 cb.SetColorStroke(
                                     new BaseColor(
                                         R2,
@@ -1525,7 +1533,7 @@ namespace TemplatePrinting
                                     }
                                     //Setting Background Color for Text
                                     //Even Lines Should be Colored Blue
-                                    if ((i % 2 == 0) && (yPosRc > minY))
+                                    if ((i % 2 == 0) && (yPosRc > MIN_Y))
                                     {
                                         //Setting the Alice Blue Color and Opacity
                                         var gs1 = new PdfGState
@@ -1547,44 +1555,44 @@ namespace TemplatePrinting
                                                 A));
                                         gs1.FillOpacity = .99999f;
                                         cb.SetGState(gs1);
-                                        yPosRc = (heightRc) - (yOffset * lineMultiplier);
+                                        yPosRc = (heightRc) - (yOffset * LINE_MULTIPLIER);
 
 
                                         //Drawing a Rectangle and Filling it.
-                                        cb.MoveTo(xPosRc, heightRc);
-                                        cb.LineTo(widthRc, heightRc);
-                                        cb.LineTo(widthRc, yPosRc);
-                                        cb.LineTo(xPosRc, yPosRc);
-                                        cb.LineTo(xPosRc, heightRc);
+                                        cb.MoveTo(X_POSITION_FOR_RECTANGLE, heightRc);
+                                        cb.LineTo(WIDTH_OF_RECTANGLE, heightRc);
+                                        cb.LineTo(WIDTH_OF_RECTANGLE, yPosRc);
+                                        cb.LineTo(X_POSITION_FOR_RECTANGLE, yPosRc);
+                                        cb.LineTo(X_POSITION_FOR_RECTANGLE, heightRc);
                                         cb.ClosePathFillStroke();
 
                                         //Moving the location
-                                        heightRc -= (yOffset * lineMultiplier);
-                                        yPosRc -= (yOffset * lineMultiplier);
+                                        heightRc -= (yOffset * LINE_MULTIPLIER);
+                                        yPosRc -= (yOffset * LINE_MULTIPLIER);
                                         continue;
                                     }
 
-                                    else if ((i % 2 > 0) && (yPosRc > minY))
+                                    else if ((i % 2 > 0) && (yPosRc > MIN_Y))
                                     {
                                         var whiteOffset = yOffset;
-                                        yPosRc = (heightRc) - (yOffset * lineMultiplier);
+                                        yPosRc = (heightRc) - (yOffset * LINE_MULTIPLIER);
                                         //Drawing the Rectangle with lines
-                                        cb.MoveTo(xPosRc, yPosRc);
-                                        cb.LineTo(widthRc, yPosRc);
-                                        cb.LineTo(widthRc, heightRc);
-                                        cb.LineTo(xPosRc, heightRc);
-                                        cb.LineTo(xPosRc, yPosRc);
+                                        cb.MoveTo(X_POSITION_FOR_RECTANGLE, yPosRc);
+                                        cb.LineTo(WIDTH_OF_RECTANGLE, yPosRc);
+                                        cb.LineTo(WIDTH_OF_RECTANGLE, heightRc);
+                                        cb.LineTo(X_POSITION_FOR_RECTANGLE, heightRc);
+                                        cb.LineTo(X_POSITION_FOR_RECTANGLE, yPosRc);
 
                                         //Coloring the Rectangle and moving the location.
                                         cb.SetColorStroke(BaseColor.WHITE);
                                         cb.SetColorFill(BaseColor.WHITE);
                                         cb.ClosePathFillStroke();
-                                        yPosRc -= (whiteOffset * lineMultiplier);
-                                        heightRc -= (whiteOffset * lineMultiplier);
+                                        yPosRc -= (whiteOffset * LINE_MULTIPLIER);
+                                        heightRc -= (whiteOffset * LINE_MULTIPLIER);
                                         continue;
                                     }
 
-                                    if (yPosRc <= minY)
+                                    if (yPosRc <= MIN_Y)
                                         i = PageArray.Count;
 
                                     if (i != PageArray.Count)
@@ -1616,14 +1624,14 @@ namespace TemplatePrinting
                                 };
 
                                 //Setting up a content byte table size and placement
-                                const float xTable = 39f;             //x-Position for the Rectangle
+                                const float X_TABLE = 39f;             //x-Position for the Rectangle
                                 var heightTable = 475.6f;     //Height of Rectangle
-                                const float widthTable = 811F;        //Width of Rectangle
-                                                                      //float minYTable = 13.2f;
-                                                                      //The height of my table's cells; the table has 4 rows so the table is 4 * yTableOffset; the width = the rightmost x coordinate - the left most x coordinate.
-                                const float yTableOffset = 10f;
-                                heightTable = heightTable + (4 * yTableOffset);
-                                headerTable.TotalWidth = (widthTable - xTable);
+                                const float WIDTH_TABLE = 811F;        //Width of Rectangle
+                                                                       //float minYTable = 13.2f;
+                                                                       //The height of my table's cells; the table has 4 rows so the table is 4 * yTableOffset; the width = the rightmost x coordinate - the left most x coordinate.
+                                const float Y_TABLE_OFFSET = 10f;
+                                heightTable = heightTable + (4 * Y_TABLE_OFFSET);
+                                headerTable.TotalWidth = (WIDTH_TABLE - X_TABLE);
 
                                 //Relative column widths in proportions - 1/10 and 2/10
                                 var widths = new[] { 2.06f, 1.25f, 1.03f, 0.86f, 1.03f, 0.90f, 0.90f, 0.90f, 0.90f, 0.46f, 0.91f, 0.90f, 0.90f };
@@ -1664,10 +1672,10 @@ namespace TemplatePrinting
                                     }
                                 }
 
-                                headerTable.WriteSelectedRows(0, -1, xTable, heightTable, cb);
+                                headerTable.WriteSelectedRows(0, -1, X_TABLE, heightTable, cb);
 
                                 //Setting up a content byte for absolute positioned text
-                                const float xPos = 42f;
+                                const float X_POS = 42f;
                                 var yPos = 548.8F;
                                 yOffset = 11.6f;
                                 yPos = yPos - (2 * yOffset);
@@ -1699,10 +1707,10 @@ namespace TemplatePrinting
 
                                     cb.BeginText();
                                     cb.SetFontAndSize(monoFont, FontSize);
-                                    cb.SetTextMatrix(xPos, yPos);  //(xPos, yPos)
+                                    cb.SetTextMatrix(X_POS, yPos);  //(xPos, yPos)
                                     cb.SetColorFill(BaseColor.BLACK);
                                     //cb.SaveState();
-                                    cb.ShowTextAligned(Element.ALIGN_JUSTIFIED, PageArray[i], xPos, yPos, 0);
+                                    cb.ShowTextAligned(Element.ALIGN_JUSTIFIED, PageArray[i], X_POS, yPos, 0);
                                     cb.EndText();
                                     yPos -= yOffset;
                                     lineCounter++;
@@ -1762,7 +1770,7 @@ namespace TemplatePrinting
         public string OutputFileName { get; set; }
         public string TodaysDate { get; set; }
         public string FullOutputPath { get; set; }
-        public Boolean BSuccess;
+        public bool BSuccess;
 
         #endregion
 
@@ -2136,7 +2144,7 @@ namespace TemplatePrinting
         public string OutputFileName { get; set; }
         public string TodaysDate { get; set; }
         public string FullOutputPath { get; set; }
-        public Boolean BSuccess;
+        public bool BSuccess;
 
         #endregion
 
@@ -2647,7 +2655,7 @@ namespace TemplatePrinting
             var agMediumBookFont = BaseFont.CreateFont(fontpath + "AGSchoolbookMediumABook Book.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
             var batchPath = PrintQueue.DirectoryInstance.ToUserDirectory + @"\Google Drive\Judy's Folder\Batchsheets\";
-            
+
 
 
 
@@ -2660,7 +2668,7 @@ namespace TemplatePrinting
                 FormName = cfg.FormName;
                 Title = cfg.Title;
                 var pdfName = cfg.PdfPath.Substring(cfg.PdfPath.LastIndexOf(@"\", StringComparison.Ordinal));
-                FullOutputPath = (FormName == "batch_sheet")? PrintQueue.DirectoryInstance.ToUserDirectory + @"\Google Drive\Judy's Folder\Batchsheets" + pdfName : cfg.PdfPath;
+                FullOutputPath = (FormName == "batch_sheet") ? PrintQueue.DirectoryInstance.ToUserDirectory + @"\Google Drive\Judy's Folder\Batchsheets" + pdfName : cfg.PdfPath;
 
 
                 //Clever way to check if a file exists. If it does, it automatically adds a _n where n in the number sequence.
@@ -2800,7 +2808,7 @@ namespace TemplatePrinting
                                     cb.ShowTextAligned(Element.ALIGN_JUSTIFIED, PageArray[i], xPos, yPos, 0);
                                     cb.EndText();
                                     yPos -= offset;
-                                    
+
                                 }
                                 if (ScannerText.MorePages)
                                     Doc.NewPage();
@@ -2869,7 +2877,7 @@ namespace TemplatePrinting
 
         #region Singleton Variables
 
-        private static readonly TemplateSingleton instance = new TemplateSingleton();
+        private static readonly TemplateSingleton _instance = new TemplateSingleton();
         public List<List<string>> StreamList { get; set; }   //Automatically implemented property.
         public List<List<List<string>>> ListOfStringLists { get; set; }   //Automatically implemented property.
         public Dictionary<ReportConfig, string> FileCfgReportPairs { get; set; }
@@ -2877,7 +2885,7 @@ namespace TemplatePrinting
         {
             get
             {
-                return instance;
+                return _instance;
             }
         }
 
@@ -2961,7 +2969,7 @@ namespace TemplatePrinting
         {
 
             Instance.ReportsList = new List<Templates>(DirectoryInstance.FileEntries.Length);
-            foreach (var file in DirectoryInstance.FileEntries)
+            foreach (var unused in DirectoryInstance.FileEntries)
             {
                 var cfg = DirectoryInstance.GetConfigFile(DirectoryInstance.NumPaired);
                 Instance.CfgList.Add(cfg);
@@ -3028,7 +3036,7 @@ namespace TemplatePrinting
                     catch (IOException)
                     {
                         using (var fileSystemWatcher =
-                            new FileSystemWatcher(Path.GetDirectoryName(path))
+                            new FileSystemWatcher(Path.GetDirectoryName(path) ?? string.Empty)
                             {
                                 EnableRaisingEvents = true
                             })
@@ -3039,7 +3047,7 @@ namespace TemplatePrinting
                                 {
                                     if (Path.GetFullPath(e.FullPath) == Path.GetFullPath(path))
                                     {
-                                        if (autoResetEvent != null) autoResetEvent.Set();
+                                        autoResetEvent?.Set();
                                     }
                                 };
 
@@ -3090,7 +3098,7 @@ namespace TemplatePrinting
         #region Template Variables
 
         //Variables, can add more later if needed.
-        private readonly String _name;
+        private readonly string _name;
 
         public static readonly Templates Error = new Templates("EROR");
         public static readonly Templates Statement = new Templates("STMT");
@@ -3103,7 +3111,7 @@ namespace TemplatePrinting
 
         #region Private Constructor
 
-        private Templates(String prefix)
+        private Templates(string prefix)
         {
             var prefix1 = prefix;
             Instance[prefix1] = this;
@@ -3147,7 +3155,7 @@ namespace TemplatePrinting
 
         #region ToString() Override
 
-        public override String ToString()
+        public override string ToString()
         {
             return _name;
         }

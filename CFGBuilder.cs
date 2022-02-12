@@ -270,7 +270,7 @@
 
 
 
-//                var myReport = new Report("NewReport", @"\SharePoint\EDSIReports - Documents\prtq\", "NewForm", myPrinter, myPdf, myLayout);
+//                var myReport = new Report("NewReport", @"\SharePoint\EDSIReports - Documents\PrintQueue\", "NewForm", myPrinter, myPdf, myLayout);
 
 //                var serializer = new XmlSerializer(typeof(Report));
 //                serializer.Serialize(File.Create(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\SharePoint\EDSIReports - AS400Report\AS400Report\PrintSetUp\" + "NewReport.xml"), myReport);
@@ -293,7 +293,7 @@
 
 //            lines[0] = "You've created a new XML Configuration File." + Environment.NewLine + "Before it can be used, you must follow the instructions below to update the code." + Environment.NewLine;
 //            lines[1] = "/t1) Go to C:\\Users\\Owner\\SharePoint\\EDSIReports - AS400Report\\AS400Report\\PrintSetUp and locate the xml file called \"NewReport.xml\". Open it.";
-//            lines[2] = "\t2) In a second window, Go to " + @"C:\Users\Owner\SharePoint\EDSIReports - Documents\prtq" + "and right click the file named " + FileName + ". Open with NotePad++.";
+//            lines[2] = "\t2) In a second window, Go to " + @"C:\Users\Owner\SharePoint\EDSIReports - Documents\PrintQueue" + "and right click the file named " + FileName + ". Open with NotePad++.";
 //            lines[3] = "\t3) Compare the Report to your xml file: ";
 //            lines[4] = "\t\tA) Change the Title of the xml Document (located under <Report> <Title> TEXT TO CHANGE </Title>. The title of the config file should match the title of the Report you opened in step 2.";
 //            lines[5] = "\t\tB) Change the FormName (located at <Report> <FormName> TEXT TO CHANGE </FormName>) to match the new Title you just updated.";

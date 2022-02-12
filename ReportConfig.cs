@@ -53,13 +53,13 @@ namespace Report
             FontSize = 8;
             BPdf = false;
             BPrint = true;
-            PdfPath = String.Empty;
+            PdfPath = string.Empty;
             PdfTop = 10;
             PdfBottom = 10;
             PdfLeft = 10;
             PdfRight = 10;
-            _pdfFile = String.Empty;
-            _pdfPath = String.Empty;
+            _pdfFile = string.Empty;
+            _pdfPath = string.Empty;
             TopPrintOffset = 0.0f;
             SuppressBlankLines = false;
 
@@ -82,14 +82,13 @@ namespace Report
         // Load the XML configuration
         private void LoadConfig(string fileName)
         {
-            XmlNode node;
-
             var doc = new XmlDocument();
 
             try
             {
                 doc.Load(fileName);
 
+                XmlNode node;
                 if ((node = doc.SelectSingleNode("/Report/Title")) != null)
                     Title = node.InnerText;
 
@@ -124,7 +123,7 @@ namespace Report
                     RightMargin = Convert.ToInt16(node.InnerText);
 
                 if ((node = doc.SelectSingleNode("/Report/Pdf/TopPrintOffset")) != null)
-                    TopPrintOffset = (float) Convert.ToDouble(node.InnerText);
+                    TopPrintOffset = (float)Convert.ToDouble(node.InnerText);
 
                 if ((node = doc.SelectSingleNode("/Report/Pdf/SuppressBlankLines")) != null)
                     SuppressBlankLines = (node.InnerText == "true");
@@ -169,26 +168,24 @@ namespace Report
         // ----------------------------------------------------------------------------------------------------------
         private string ScanReplace(string origPath)
         {
-            var origFileName = String.Empty;
-            var newFileName = String.Empty;
-            string prefix, strScid, strCons, strDate;
-            int scid, cons;
+            string newFileName;
 
-            origFileName = Path.GetFileName(origPath);
-            scid = cons = 0;
-            prefix = origFileName.Substring(0, 4);
+            var origFileName = Path.GetFileName(origPath);
+            var prefix = origFileName.Substring(0, 4);
             if (prefix == "JOUR" || prefix == "TRAN" || prefix == "TPPJ" || prefix == "BILL" || prefix == "CRED" ||
                 prefix == "LOWB" || prefix == "PAST" || prefix == "PAID" || prefix == "COHO" || prefix == "SEPA" ||
                 prefix == "BADA" || prefix == "FISC" || prefix == "NEWL" || prefix == "ENRO" || prefix == "BATC" ||
                 prefix == "DELE" || prefix == "INVO" || prefix == "EPSR" || prefix == "COLL" || prefix == "HIST" ||
                 prefix == "DISB" || prefix == "EPSR" || prefix == "SLP0")
             {
-                strScid = origFileName.Substring(4, 3);
-                strCons = origFileName.Substring(7, 3);
+                var strScid = origFileName.Substring(4, 3);
+                var strCons = origFileName.Substring(7, 3);
 
 
                 if (prefix != "EPSR" && prefix != "INVO" && prefix != "HIST" && prefix != "SLP0")
                 {
+                    int scid;
+                    int cons;
                     try
                     {
                         scid = AbbrevToNumber(strScid);
@@ -204,7 +201,7 @@ namespace Report
                     }
                 }
                 var thisDay = DateTime.Today;
-                strDate = thisDay.Year.ToString();
+                var strDate = thisDay.Year.ToString();
                 strDate = strDate.TrimEnd() + thisDay.Month.ToString("D2");
                 strDate = strDate.TrimEnd() + thisDay.Day.ToString("D2");
 
@@ -223,7 +220,7 @@ namespace Report
 
                 // Does file name already exist?
                 if (File.Exists(newFileName))
-                    newFileName.Replace(".pdf", "_copy.pdf");
+                    newFileName = newFileName.Replace(".pdf", "_copy.pdf");
             }
 
             return (newFileName);
@@ -237,9 +234,9 @@ namespace Report
         // --------------------------------------------------
         private static int AbbrevToNumber(string strScid)
         {
-            var scid = 0;
+            int scid;
 
-            switch(strScid)
+            switch (strScid)
             {
                 case "BOY": scid = 1006; break;
                 case "ACI": scid = 1007; break;
@@ -279,7 +276,7 @@ namespace Report
                 case "CAN": scid = 12115; break;
                 case "WAD": scid = 20100; break;
                 case "CHD": scid = 20110; break;
-                default   : scid = 0;     break;
+                default: scid = 0; break;
             }
 
             return (scid);

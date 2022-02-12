@@ -69,3 +69,18 @@ C:\AS400Report\AS400Report\bin\Debug\itextsharp.xml
 C:\AS400Report\AS400Report\obj\Debug\AS400Report.exe
 C:\AS400Report\AS400Report\obj\Debug\AS400Report.pdb
 C:\AS400Report\AS400Report\obj\Debug\AS400Report.csprojResolveAssemblyReference.cache
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\AS400Report.exe.config
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\AS400Report.exe
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\AS400Report.pdb
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\GroupDocs.Viewer.dll
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\Ionic.BZip2.dll
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\Ionic.Zip.dll
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\Ionic.Zlib.dll
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\itextsharp.dll
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\itextsharp.pdfa.dll
+C:\Users\Jon Martin\source\repos\PDF-Creator\bin\Debug\itextsharp.xml
+C:\Users\Jon Martin\source\repos\PDF-Creator\obj\Debug\AS400Report.csproj.SuggestedBindingRedirects.cache
+C:\Users\Jon Martin\source\repos\PDF-Creator\obj\Debug\AS400Report.csproj.CoreCompileInputs.cache
+C:\Users\Jon Martin\source\repos\PDF-Creator\obj\Debug\AS400Report.csproj.CopyComplete
+C:\Users\Jon Martin\source\repos\PDF-Creator\obj\Debug\AS400Report.exe
+C:\Users\Jon Martin\source\repos\PDF-Creator\obj\Debug\AS400Report.pdb

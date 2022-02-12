@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using AS400Report;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AS400Report;
 
 namespace Report
 {
@@ -114,7 +114,7 @@ namespace Report
         {
             var sb = new StringBuilder();
             string line;
-            const string strCrLf = "\r\n";
+            const string STR_CR_LF = "\r\n";
             var pageLen = 0;
             int lineLen;
             var fromPos = 0;
@@ -164,7 +164,7 @@ namespace Report
                                 _curPageOffset++;
                                 fromPos++;
                             }
-                            sb.Append(strCrLf);
+                            sb.Append(STR_CR_LF);
                             pageLen += 2;
                             break;
                         }
@@ -181,8 +181,8 @@ namespace Report
                                 _curPageOffset++;
                                 fromPos++;
                             }
-                            sb.Append(strCrLf);
-                            sb.Append(strCrLf);
+                            sb.Append(STR_CR_LF);
+                            sb.Append(STR_CR_LF);
                             pageLen += 4;
                             break;
                         }
@@ -251,15 +251,15 @@ namespace Report
         //Currently Unused
         #region NextPage(arg)
 
-         //------------------------------------------------------------------------------
-         //Scan for form feed/spacing codes to determine the next page to print
-         //Returns 0 if successful
-         //------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------
+        //Scan for form feed/spacing codes to determine the next page to print
+        //Returns 0 if successful
+        //------------------------------------------------------------------------------
         public List<string> NextPage(string textToPrint)
         {
             var pageLines = new string[110];
             string line;
-            const string strCrLf = "\r\n";
+            const string STR_CR_LF = "\r\n";
             var pageLen = 0;
             int lineLen;
             var fromPos = 0;
@@ -269,7 +269,7 @@ namespace Report
             bool bSkip;
             char[] firstChar;
 
-            if(_curPageOffset > 0)
+            if (_curPageOffset > 0)
             {
 
                 pageLines.ToList().Clear();
@@ -318,7 +318,7 @@ namespace Report
                                 _curPageOffset++;
                                 fromPos++;
                             }
-                            pageLines[lineNbr++] = strCrLf;
+                            pageLines[lineNbr++] = STR_CR_LF;
                             pageLen += 2;
                             break;
                         }
@@ -335,8 +335,8 @@ namespace Report
                                 _curPageOffset++;
                                 fromPos++;
                             }
-                            pageLines[lineNbr++] = strCrLf;
-                            pageLines[lineNbr++] = strCrLf;
+                            pageLines[lineNbr++] = STR_CR_LF;
+                            pageLines[lineNbr++] = STR_CR_LF;
                             pageLen += 4;
                             break;
                         }

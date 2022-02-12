@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Report;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -9,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using Report;
 using TemplatePrinting;
 using static System.Configuration.ConfigurationSettings;
 
@@ -20,7 +20,6 @@ namespace AS400Report
     public class Program
     {
         private static readonly List<Task> PrinterThreads = new List<Task>();
-        public static bool BReport { get; }
 
         #region Main
 
@@ -38,8 +37,8 @@ namespace AS400Report
 
             if (reportType == reports || reportType == all)
             {
-                var configPath = @"C:\AS400Report\Print Queue\prtq\";
-                const string searchPattern = "*.*";
+                const string configPath = @"C:\AS400Report\Print Queue\PrintQueue\";
+                const string SEARCH_PATTERN = "*.*";
                 var directorySingleton = PrintQueue.DirectoryInstance;
 
 
@@ -50,36 +49,22 @@ namespace AS400Report
                 }
 
                 //Before Receiving files from the AS400, delete the old files from the last print job.
-                //ClearPrtq();                          //Commented out until we're ready to implement the sockets.
+                //ClearPrintQueue();                          //Commented out until I'm ready to implement the sockets.
 
                 //For All Reports generated in the previous month, Zip them into a zip file then Delete the pdf versions to save space.
-                //ArchiveFiles();
+                ArchiveFiles();
 
-                //FTP all files from the AS400 to the prtq folder
-                //CommandPromptScript_Files();
+                //FTP all files from the AS400 to the PrintQueue folder
+                CommandPromptScript_Files();
 
                 //Process the directory (compiles a list of files to print and gets their config files), then Print the files.
-                PrintQueue.ProcessDirectory(directorySingleton, @"C:\AS400Report\Print Queue\prtq\", searchPattern);
+                PrintQueue.ProcessDirectory(directorySingleton, @"C:\AS400Report\Print Queue\PrintQueue\", SEARCH_PATTERN);
                 Print();
             }
             if (reportType == statements || reportType == all)
             {
 
                 var csvStatements = new PrintStatement();
-
-                //var PrintingTask = new Task(csvStatements.PrintStatementPDF);
-                //PrinterThreads.Add(PrintingTask);
-
-                ////Might need to comment out.
-                //Parallel.ForEach(PrinterThreads, t =>
-                //{
-
-                //    t.Start();
-
-                //});
-                //Task.WaitAll(PrinterThreads.ToArray());
-
-
                 csvStatements.PrintStatementPdf();
 
             }
@@ -193,7 +178,7 @@ namespace AS400Report
                     //Get a list of all the files that share the same config type.
                     //var sharedConfigList = GetValuefromdictionary(DirectorySingleton.ThisConfig, TemplateInstance.FileCFGReportPairs);
                     //ListByReportType.Add(sharedConfigList);
-                    listByReportType.Add(new List<string>(GetValuefromdictionary(s, templateInstance.FileCfgReportPairs)));
+                    listByReportType.Add(new List<string>(GetValueFromDictionary(s, templateInstance.FileCfgReportPairs)));
 
                 }
                 foreach (var filesWithSharedConfig in listByReportType)
@@ -305,13 +290,12 @@ namespace AS400Report
         #region LinQ -> Get all Files for Each Config File
 
         //Searches my Dictionary of KeyValuePairs. For each file of a given ReportConfig Type, the file is added to a list to be printed. This allows me to print by file type.
-        private static List<string> GetValuefromdictionary(ReportConfig cfgFile, Dictionary<ReportConfig, string> cfgPairs)
+        private static List<string> GetValueFromDictionary(ReportConfig cfgFile, Dictionary<ReportConfig, string> cfgPairs)
         {
             var configName = cfgFile.Title;
             var selectedValues = TemplateSingleton.Instance.CfgList
                      .Where(x => x.Title == configName)
                      .Select(x => cfgPairs[x])
-
                      .ToList();
 
             return selectedValues;
@@ -319,7 +303,7 @@ namespace AS400Report
 
         #endregion
 
-        #region Zip Old Files  :  Unused
+        #region Zip Old Files
 
         public static void ArchiveFiles()
         {
@@ -332,17 +316,17 @@ namespace AS400Report
             var lastMonthVar4 = d.ToString("yyyyMMdd");
             var lastMonthVar5 = d.ToString("dd-MM-yyyy");
             var lastMonthAsText = d.ToString("MMMM, yyyy");
-            const string archivePath = @"C:\AS400Report\ArchivedFiles\";
-            const string path = @"C:\AS400Report\Reports\";
-            var zipName = archivePath + lastMonthAsText + "'s Reports";
+            const string ARCHIVE_PATH = @"C:\AS400Report\ArchivedFiles\";
+            const string PATH = @"C:\AS400Report\Reports\";
+            var zipName = ARCHIVE_PATH + lastMonthAsText + "'s Reports";
 
 
-            var deleteFiles = new DirectoryInfo(path);
+            var deleteFiles = new DirectoryInfo(PATH);
             deleteFiles.GetFiles("*.*")
                 .Where(p => p.Extension == "*.*").ToArray();
 
             //Files in Directory is a list of all files found in the folder.
-            var filesInDirectory = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
+            var filesInDirectory = Directory.GetFiles(PATH, "*", SearchOption.AllDirectories).ToList();
 
             //Files to Zip are the ones ready to be archived.
             var filesToZip = new List<string>(filesInDirectory.Count);
@@ -369,7 +353,7 @@ namespace AS400Report
                          || (file.Contains(lastMonthVar3) && fileExtension == extensionChars)
                          || (file.Contains(lastMonthVar4) && fileExtension == extensionChars)
                          || (file.Contains(lastMonthVar5) && fileExtension == extensionChars)
-                    /*||  testcounter > 34*/
+                /*||  testcounter > 34*/
                 )
                     filesToZip.Add(file);
             }
@@ -385,25 +369,24 @@ namespace AS400Report
 
             }
 
-            ClearPrtq();
+            ClearPrintQueue();
         }
 
         #endregion
 
-        #region Delete Items in prtq
+        #region Delete Items in PrintQueue
 
-        private static void ClearPrtq()
+        private static void ClearPrintQueue()
         {
-            var prtq = @"C:\AS400Report\Print Queue\";
-            var oldFiles = Directory.GetFiles(prtq, "*", SearchOption.AllDirectories).ToList();
+            var PrintQueue = @"C:\AS400Report\Print Queue\";
+            var oldFiles = Directory.GetFiles(PrintQueue, "*", SearchOption.AllDirectories).ToList();
 
-            //Delete files in prtq before receiving new files from the AS400
-            foreach (var file in oldFiles)
+            //Delete files in PrintQueue before receiving new files from the AS400
+            foreach (var deleteFile in oldFiles.Select(file => new FileInfo(file)
+                     {
+                         Attributes = FileAttributes.Normal
+                     }))
             {
-                var deleteFile = new FileInfo(file)
-                {
-                    Attributes = FileAttributes.Normal
-                };
                 File.Delete(deleteFile.FullName);
             }
 
@@ -414,7 +397,7 @@ namespace AS400Report
         #region GetShortPath
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        public static extern int GetShortPathName(
+        private static extern int GetShortPathName(
         [MarshalAs(UnmanagedType.LPTStr)]
          string path,
         [MarshalAs(UnmanagedType.LPTStr)]
@@ -424,9 +407,9 @@ namespace AS400Report
 
         private static string GetShortPath(string path)
         {
-            const int maxPath = 255;
-            var shortPath = new StringBuilder(maxPath);
-            GetShortPathName(path, shortPath, maxPath);
+            const int MAX_PATH = 255;
+            var shortPath = new StringBuilder(MAX_PATH);
+            GetShortPathName(path, shortPath, MAX_PATH);
             return shortPath.ToString();
 
         }
@@ -435,25 +418,25 @@ namespace AS400Report
 
         #region Collect FTP Statements
 
-        //This should Asyncronously run the script (in the string command) to execute the ftp. The window won't pop up because that would look dumb.
+        //This should Asyncronous run the script (in the string command) to execute the ftp. The window won't pop up because that would look dumb.
         static void CommandPromptScript_Statements()
         {
-            const string statementString = @"C:\AS400Report\Print Queue\CSV Files";
+            const string STATEMENT_STRING = @"C:\AS400Report\Print Queue\CSV Files";
 
             var shortPath = new StringBuilder(255);
-            GetShortPathName(statementString, shortPath, shortPath.Capacity);
+            GetShortPathName(STATEMENT_STRING, shortPath, shortPath.Capacity);
 
             #region SecureString
 
             var s = new SecureString();
-            s.AppendChar('g');
-            s.AppendChar('s');
-            s.AppendChar('l');
-            s.AppendChar('t');
-            s.AppendChar('w');
+            s.AppendChar('E');
+            s.AppendChar('x');
+            s.AppendChar('a');
+            s.AppendChar('m');
+            s.AppendChar('p');
             s.AppendChar('1');
-            s.AppendChar('t');
-            s.AppendChar('h');
+            s.AppendChar('l');
+            s.AppendChar('e');
 
             #endregion
 
@@ -469,21 +452,16 @@ namespace AS400Report
             ////processInfo.UserName = "ftpadmin";
             ////processInfo.Password = s;
 
-            var ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.5//Home/Export/");
-            //ftpRequest.Credentials = new NetworkCredential("ftpadmin", s);
+            var ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://555.555.5.5//Home/Export/"); // This is just a sample ftp address, don't actually go here
+
             ftpRequest.Method = WebRequestMethods.Ftp.ListDirectory;
-
             ftpRequest.Credentials = new NetworkCredential("ftpadmin", s);
-
             var response = (FtpWebResponse)ftpRequest.GetResponse();
-
             var responseStream = response.GetResponseStream();
             if (responseStream == null) return;
             using (var reader = new StreamReader(responseStream))
             {
-
                 var directories = new List<string>();
-
                 var line = reader.ReadLine();
 
                 while (!string.IsNullOrEmpty(line))
@@ -499,49 +477,13 @@ namespace AS400Report
 
                     for (var i = 0; i <= directories.Count - 1; i++)
                     {
-                        if (directories[i].Contains("statements.csv"))
-                        {
-
-                            var path = "ftp://192.168.1.5//Home/Export/" + directories[i];
-                            var trnsfrpth = statementString;
-                            ftpClient.DownloadFile(path, trnsfrpth);
-                        }
+                        if (!directories[i].Contains("statements.csv")) continue;
+                        var path = "ftp://555.555.5.5//Home/Export/" + directories[i];
+                        var transferPath = STATEMENT_STRING;
+                        ftpClient.DownloadFile(path, transferPath);
                     }
                 }
             }
-            //CMDScript.StartInfo = processInfo;
-            //CMDScript.Start();
-
-            //using (StreamWriter sw = CMDScript.StandardInput)
-            //{
-            //    if (sw.BaseStream.CanWrite)
-            //    {
-            //        sw.WriteLine("cd" + shortPath.ToString().Substring(2));
-            //        sw.WriteLine("del /Q *");
-            //        sw.WriteLine("ftp 192.168.1.5");
-            //        sw.WriteLine("ftpadmin");
-            //        sw.WriteLine(s);
-            //        sw.WriteLine("cd /home/export");
-            //        sw.WriteLine("lcd" + shortPath.ToString().Substring(2));
-            //        sw.WriteLine("get statements.csv");
-            //        sw.WriteLine("bye");
-            //    }
-            //}
-
-
-
-            //CMDScript.OutputDataReceived += (object sender, System.Diagnostics.DataReceivedEventArgs e) =>
-            //    Console.WriteLine("output>>" + e.Data);
-            //CMDScript.BeginOutputReadLine();
-
-            //CMDScript.ErrorDataReceived += (object sender, System.Diagnostics.DataReceivedEventArgs e) =>
-            //    Console.WriteLine("error>>" + e.Data);
-            //CMDScript.BeginErrorReadLine();
-
-            //CMDScript.WaitForExit();
-
-            //Console.WriteLine("ExitCode: {0}", CMDScript.ExitCode);
-            //CMDScript.Close();
         }
 
         #endregion
@@ -551,17 +493,17 @@ namespace AS400Report
         //This should Asyncronously run the script (in the string command) to execute the ftp. The window won't pop up because that would look dumb.
         static void CommandPromptScript_Files()
         {
-            const string command = "cd/C:\\Users\\Owner\\Educational Data Systems, Inc\\EDSIReports - Documents\\prtq " +
+            const string COMMAND = "cd/C:\\Users\\Owner\\Educational Data Systems, Inc\\EDSIReports - Documents\\PrintQueue " +
        "del /Q *.* " +
-       "open 192.168.1.5 " +
+       "open 555.555.5.5 " +
        "ftpadmin " +
-       "gsltw1th " +
+       "Example " +
        "cd / home / export " +
-       "lcd C:\\Users\\Owner\\Educational Data Systems, Inc\\EDSIReports - Documents\\prtq " +
+       "lcd C:\\Users\\Owner\\Educational Data Systems, Inc\\EDSIReports - Documents\\PrintQueue " +
        "mget *.* " +
        "bye";
 
-            var processInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c " + command)
+            var processInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c " + COMMAND)
             {
                 CreateNoWindow = true,
                 UseShellExecute = false,
@@ -572,11 +514,11 @@ namespace AS400Report
             var process = System.Diagnostics.Process.Start(processInfo);
 
             if (process == null) return;
-            process.OutputDataReceived += (object sender, System.Diagnostics.DataReceivedEventArgs e) =>
+            process.OutputDataReceived += (sender, e) =>
                 Console.WriteLine("output>>" + e.Data);
             process.BeginOutputReadLine();
 
-            process.ErrorDataReceived += (object sender, System.Diagnostics.DataReceivedEventArgs e) =>
+            process.ErrorDataReceived += (sender, e) =>
                 Console.WriteLine("error>>" + e.Data);
             process.BeginErrorReadLine();
 
@@ -610,17 +552,17 @@ namespace AS400Report
 
         public void ArchiveFiles()
         {
-            const string csvPath = @"C:\AS400Report\Print Queue\CSV Files\";
-            const string oldCsvPath = @"C:\AS400Report\ArchivedFiles\OldCSVFiles\";
+            const string CSV_PATH = @"C:\AS400Report\Print Queue\CSV Files\";
+            const string OLD_CSV_PATH = @"C:\AS400Report\ArchivedFiles\OldCSVFiles\";
 
-            var csvFolder = new DirectoryInfo(csvPath);
+            var csvFolder = new DirectoryInfo(CSV_PATH);
             var csvFiles = csvFolder.GetFiles("*.csv");
 
             string csvArchiveName;
 
             foreach (var file in csvFiles)
             {
-                csvArchiveName = oldCsvPath + file.Name;
+                csvArchiveName = OLD_CSV_PATH + file.Name;
                 //Clever way to check if a file exists. If it does, it automatically adds a _n where n in the number sequence.
                 if (File.Exists(csvArchiveName))
                 {
@@ -638,18 +580,18 @@ namespace AS400Report
                     }
                 }
 
-                File.Move(csvPath + file.Name, csvArchiveName);
+                File.Move(CSV_PATH + file.Name, csvArchiveName);
             }
 
-            const string toPrtq = @"C:\AS400Report\Print Queue\prtq\";
-            const string toArchivePrtq = @"C:\AS400Report\ArchivedFiles\ArchivedPrtq\";
+            const string TO_PrintQueue = @"C:\AS400Report\Print Queue\PrintQueue\";
+            const string TO_ARCHIVE_PrintQueue = @"C:\AS400Report\ArchivedFiles\ArchivedPrintQueue\";
 
-            var prtqFolder = new DirectoryInfo(toPrtq);
-            var prtq = prtqFolder.GetFiles();
+            var PrintQueueFolder = new DirectoryInfo(TO_PrintQueue);
+            var PrintQueue = PrintQueueFolder.GetFiles();
 
-            foreach (var splfile in prtq)
+            foreach (var splfile in PrintQueue)
             {
-                var splfArchiveName = toArchivePrtq + splfile.Name;
+                var splfArchiveName = TO_ARCHIVE_PrintQueue + splfile.Name;
                 //Clever way to check if a file exists. If it does, it automatically adds a _n where n in the number sequence.
                 if (File.Exists(splfArchiveName))
                 {
@@ -663,7 +605,7 @@ namespace AS400Report
                         splfArchiveName = splfile.Name + "_" + sequence;
                     }
                 }
-                File.Move(toPrtq + splfile.Name, splfArchiveName);
+                File.Move(TO_PrintQueue + splfile.Name, splfArchiveName);
             }
 
 
@@ -683,7 +625,7 @@ namespace AS400Report
             //Path Variables
             var path = @"C:\AS400Report\ArchivedFiles\";
             var pathCsv = path + @"OldCSVFiles\";
-            var pathPrtq = path + @"ArchivedPrtq\";
+            var pathPrintQueue = path + @"ArchivedPrintQueue\";
 
             //Zip Names
             var zipName = monthAsText + "'s Reports";
@@ -707,7 +649,7 @@ namespace AS400Report
                     foreach (var file in zipfiles)
                     {
                         zip.AddDirectory(pathCsv);
-                        zip.AddDirectory(pathPrtq);
+                        zip.AddDirectory(pathPrintQueue);
                         ZipFile.CreateFromDirectory(path, zipArchiveName + ".zip");
                         zip.Save(file.Name + yesterday.ToLongDateString());
                     }
